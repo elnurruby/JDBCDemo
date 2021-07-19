@@ -3,6 +3,7 @@ package com.company.dao.impl;
 import com.company.bean.User;
 import dao.inter.AbstractDao;
 import dao.inter.UserDaoInter;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -56,6 +57,22 @@ public class UserDaoImpl extends AbstractDao implements UserDaoInter {
     }
 
     @Override
+    public boolean addUser(User u) {
+        try (Connection c = connect()) {
+            PreparedStatement preparedStatement = c.prepareStatement("INSERT INTO user (name,surname,phone,email) values(?,?,?,?)");
+            preparedStatement.setString(1, u.getName());
+            preparedStatement.setString(2, u.getSurname());
+            preparedStatement.setString(3, u.getPhone());
+            preparedStatement.setString(4, u.getEmail());
+
+            return preparedStatement.execute();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return false;
+        }
+    }
+
+    @Override
     public boolean updateUser(User u) {
         try (Connection c = connect()) {
             PreparedStatement preparedStatement = c.prepareStatement("UPDATE user SET name =?,surname=?, phone=?, email=? WHERE id =?");
@@ -75,7 +92,7 @@ public class UserDaoImpl extends AbstractDao implements UserDaoInter {
     public boolean removeUser(int id) {
         try (Connection c = connect()) {
             Statement stmt = c.createStatement();
-            return stmt.execute("DELETE from user WHERE id= "+id);
+            return stmt.execute("DELETE from user WHERE id= " + id);
         } catch (Exception ex) {
             ex.printStackTrace();
             return false;
