@@ -1,10 +1,19 @@
 package com.company.bean;
 
+import java.sql.Date;
+
 public class User {
     private int id;
     private String name;
     private String surname;
     private String phone;
+    private Date birthdate;
+    private Country nationality;
+    private Country birthPlace;
+
+    public Date getBirthdate() {
+        return birthdate;
+    }
 
     @Override
     public String toString() {
@@ -13,8 +22,31 @@ public class User {
                 ", name='" + name + '\'' +
                 ", surname='" + surname + '\'' +
                 ", phone='" + phone + '\'' +
+                ", birthdate=" + birthdate +
+                ", nationality=" + nationality +
+                ", birthPlace=" + birthPlace +
                 ", email='" + email + '\'' +
                 '}';
+    }
+
+    public void setBirthdate(Date birthdate) {
+        this.birthdate = birthdate;
+    }
+
+    public Country getNationality() {
+        return nationality;
+    }
+
+    public void setNationality(Country nationality) {
+        this.nationality = nationality;
+    }
+
+    public Country getBirthPlace() {
+        return birthPlace;
+    }
+
+    public void setBirthPlace(Country birthPlace) {
+        this.birthPlace = birthPlace;
     }
 
     public User() {
@@ -56,17 +88,21 @@ public class User {
         return email;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public User(int id, String name, String surname, String phone, String email) {
+    public User(int id, String name, String surname, String phone, Date birthdate, String email, Country nationality, Country birthPlace) {
         this.id = id;
         this.name = name;
         this.surname = surname;
         this.phone = phone;
+        this.birthdate = birthdate;
+        this.nationality = nationality;
+        this.birthPlace = birthPlace;
         this.email = email;
     }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
 
     private String email;
 }

@@ -1,32 +1,45 @@
 package com.company.dao.impl;
 
+import com.company.bean.Country;
 import com.company.bean.User;
 import dao.inter.AbstractDao;
 import dao.inter.UserDaoInter;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class UserDaoImpl extends AbstractDao implements UserDaoInter {
+    private User getUser(ResultSet rs) throws Exception {
+        int id = rs.getInt("id");
+        String name = rs.getString("name");
+        String surname = rs.getString("surname");
+        String phone = rs.getString("phone");
+        String email = rs.getString("email");
+        String nationality = rs.getString("nationality");
+        String birthPlace = rs.getString("birthplace");
+        Date birthDate = rs.getDate("birth_date");
+        int nationalityID = rs.getInt("nationality_id");
+        int birthplaceID = rs.getInt("birthplace_id");
+        Country nationality1 = new Country(nationalityID, null, nationality);
+        Country birthPlace1 = new Country(birthplaceID, birthPlace, null);
+        return (new User(id, name, surname, phone, birthDate, email, nationality1, birthPlace1));
+    }
+
     @Override
     public List<User> getAll() {
         List<User> result = new ArrayList<>();
         try (Connection c = connect()) {
             Statement stmt = c.createStatement();
-            stmt.execute("SELECT * FROM user");
+            String query = "SELECT u.*, n.nationality AS nationality, c.name AS birthplace" +
+                    " FROM user u LEFT JOIN country n ON u.nationality_id = n.id " +
+                    "LEFT JOIN country c ON u.birthplace_id = c.id";
+            stmt.execute(query);
             ResultSet rs = stmt.getResultSet();
 
             while (rs.next()) {
-                int id = rs.getInt("id");
-                String name = rs.getString("name");
-                String surname = rs.getString("surname");
-                String phone = rs.getString("phone");
-                String email = rs.getString("email");
-                result.add(new User(id, name, surname, phone, email));
+                User u = getUser(rs);
+                result.add(u);
             }
         } catch (Exception exx) {
             exx.printStackTrace();
@@ -37,18 +50,17 @@ public class UserDaoImpl extends AbstractDao implements UserDaoInter {
 
     @Override
     public User getByID(int id) {
-        User u = null;
+        User u = null;//
         try (Connection c = connect()) {
-            Statement stmt = c.createStatement();
-            stmt.execute("SELECT * FROM user where id = " + id);
+            String query = "SELECT u.*, n.nationality AS nationality, c.name AS birthplace" +
+                    " FROM user u LEFT JOIN country n ON u.nationality_id = n.id " +
+                    "LEFT JOIN country c ON u.birthplace_id = c.id where u.id = " + id;
+            PreparedStatement stmt = c.prepareStatement(query);
+
+            stmt.execute();
             ResultSet rs = stmt.getResultSet();
             while (rs.next()) {
-                int idz = rs.getInt("id");
-                String name = rs.getString("name");
-                String surname = rs.getString("surname");
-                String phone = rs.getString("phone");
-                String email = rs.getString("email");
-                u = new User(idz, name, surname, phone, email);
+                u = getUser(rs);
             }
         } catch (Exception exx) {
             exx.printStackTrace();
