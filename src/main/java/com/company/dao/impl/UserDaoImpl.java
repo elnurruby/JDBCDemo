@@ -27,14 +27,45 @@ public class UserDaoImpl extends AbstractDao implements UserDaoInter {
     }
 
     @Override
-    public List<User> getAll() {
+    public List<User> getAll(String name, String surname, Integer nationalityID) {
         List<User> result = new ArrayList<>();
         try (Connection c = connect()) {
-            Statement stmt = c.createStatement();
             String query = "SELECT u.*, n.nationality AS nationality, c.name AS birthplace" +
                     " FROM user u LEFT JOIN country n ON u.nationality_id = n.id " +
-                    "LEFT JOIN country c ON u.birthplace_id = c.id";
-            stmt.execute(query);
+                    "LEFT JOIN country c ON u.birthplace_id = c.id where 1=1";
+            int i = 1;
+            if (name != null && !name.trim().isEmpty()) {
+                query += " and u.name=?";
+
+            }
+            if (surname != null && !surname.trim().isEmpty()) {
+                query += " and u.surname=?";
+
+            }
+            // checking nationalityID is not empty ("")
+            boolean check = String.valueOf(nationalityID).isEmpty();
+            if (nationalityID != null && !check) {
+                query += " and u.nationality_id=?";
+
+            }
+            PreparedStatement stmt = c.prepareStatement(query);
+
+            if (name != null && !name.trim().isEmpty()) {
+                stmt.setString(i, name);
+                i++;
+
+            }
+            if (surname != null && !surname.trim().isEmpty()) {
+                stmt.setString(i, surname);
+                i++;
+
+            }
+            // checking nationalityID is not empty ("")
+            if (nationalityID != null && !check) {
+                stmt.setInt(i, nationalityID);
+            }
+            stmt.execute();
+
             ResultSet rs = stmt.getResultSet();
 
             while (rs.next()) {

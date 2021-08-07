@@ -9,11 +9,6 @@ public class User {
     private String phone;
     private Date birthdate;
     private Country nationality;
-    private Country birthPlace;
-
-    public Date getBirthdate() {
-        return birthdate;
-    }
 
     @Override
     public String toString() {
@@ -25,8 +20,24 @@ public class User {
                 ", birthdate=" + birthdate +
                 ", nationality=" + nationality +
                 ", birthPlace=" + birthPlace +
+                ", nationalityId=" + nationalityId +
                 ", email='" + email + '\'' +
                 '}';
+    }
+
+    public Integer getNationalityId() {
+        return nationalityId;
+    }
+
+    public void setNationalityId(Integer nationalityId) {
+        this.nationalityId = nationalityId;
+    }
+
+    private Country birthPlace;
+    private Integer nationalityId;
+
+    public Date getBirthdate() {
+        return birthdate;
     }
 
     public void setBirthdate(Date birthdate) {
